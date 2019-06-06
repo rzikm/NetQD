@@ -11,6 +11,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{DB19B3DE-5
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetQD.Test", "test\NetQD.Test\NetQD.Test.csproj", "{26AB4507-27F5-42B8-AA47-AC5CB8908BC8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetQD.Benchmark", "bench\NetQD.Benchmark\NetQD.Benchmark.csproj", "{6B4D3BA9-E7B2-440C-BBA4-FF27ED57CAE0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bench", "bench", "{3E8A3601-3713-474B-8A55-9AEB13D455AB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +29,10 @@ Global
 		{26AB4507-27F5-42B8-AA47-AC5CB8908BC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26AB4507-27F5-42B8-AA47-AC5CB8908BC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26AB4507-27F5-42B8-AA47-AC5CB8908BC8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B4D3BA9-E7B2-440C-BBA4-FF27ED57CAE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B4D3BA9-E7B2-440C-BBA4-FF27ED57CAE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B4D3BA9-E7B2-440C-BBA4-FF27ED57CAE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B4D3BA9-E7B2-440C-BBA4-FF27ED57CAE0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -32,6 +40,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{690B0386-F0B2-4612-8AEB-B2C1ED546ABE} = {327703FB-A8BB-4601-B4CB-91AF6F624D5A}
 		{26AB4507-27F5-42B8-AA47-AC5CB8908BC8} = {DB19B3DE-5CCB-4976-A815-9A5106E1AF51}
+		{6B4D3BA9-E7B2-440C-BBA4-FF27ED57CAE0} = {3E8A3601-3713-474B-8A55-9AEB13D455AB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E223F01D-8B15-4832-88BC-B120E62D4FD8}
