@@ -1,0 +1,2 @@
+﻿[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("NetQD.Test", AllInternalsVisible = true)]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("NetQD.Benchmark", AllInternalsVisible = true)]
