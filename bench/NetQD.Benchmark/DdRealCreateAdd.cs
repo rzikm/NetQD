@@ -1,4 +1,5 @@
-﻿using BenchmarkDotNet.Attributes;
+﻿using System.Runtime.CompilerServices;
+using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
 
 namespace NetQD.Benchmark
@@ -17,39 +18,30 @@ namespace NetQD.Benchmark
         }
 
         [Benchmark]
-        public DdReal Unpack()
-        {
-            return DdReal.Add_Unpack(a, b);
-        }
-
-        [Benchmark]
-        public DdReal Hybrid()
-        {
-            return DdReal.Add_Hybrid(a, b);
-        }
-
-        [Benchmark]
-        public DdReal OutArgs()
-        {
-            return DdReal.Add_OutArgs(a, b);
-        }
-
-        [Benchmark]
-        public DdReal Direct()
-        {
-            return DdReal.Add_DirectPtr(a, b);
-        }
-
-        [Benchmark]
         public DdReal OutToCtor()
         {
-            return DdReal.Add_OutToCtor(a, b);
+            return Add_OutToCtor(a, b);
         }
 
         [Benchmark]
         public DdReal UnpackToCtor()
         {
-            return DdReal.Add_UnpackToCtor(a, b);
+            return Add_UnpackToCtor(a, b);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static DdReal Add_OutToCtor(double a, double b)
+        {
+            MathHelper.TwoSum(a, b, out var sum, out var error);
+            return new DdReal(sum, error);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static DdReal Add_UnpackToCtor(double a, double b)
+        {
+            (double s, double e) = MathHelper.TwoSum(a, b);
+            return new DdReal(s, e);
+        }
+
     }
 }

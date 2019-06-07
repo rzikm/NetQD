@@ -14,40 +14,10 @@ namespace NetQD
             data[1] = x1;
         }
 
+        #region Addition
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static DdReal Add(double a, double b)
-        {
-            return Add_OutArgs(a, b);
-        }
-
-        #region Benchmark only methods (will not compile in other class)
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static DdReal Add_Unpack(double a, double b)
-        {
-            DdReal result;
-            (result.data[0], result.data[1]) = MathHelper.TwoSum(a, b);
-            return result;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static DdReal Add_Hybrid(double a, double b)
-        {
-            DdReal result;
-            result.data[0] = MathHelper.TwoSum(a, b, out result.data[1]);
-            return result;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static DdReal Add_OutArgs(double a, double b)
-        {
-            DdReal result;
-            MathHelper.TwoSum(a, b, out result.data[0], out result.data[1]);
-            return result;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static DdReal Add_DirectPtr(double a, double b)
         {
             DdReal result;
             MathHelper.TwoSum(a, b, result.data);
@@ -55,19 +25,35 @@ namespace NetQD
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static DdReal Add_OutToCtor(double a, double b)
+        public DdReal Add(double other)
         {
-            MathHelper.TwoSum(a, b, out var sum, out var error);
-            return new DdReal(sum, error);
+            var (s1, s2) = MathHelper.TwoSum(data[0], other);
+            s2 += data[1];
+            (s1, s2) = MathHelper.QuickTwoSum(s1, s2);
+            return new DdReal(s1, s2);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static DdReal Add_UnpackToCtor(double a, double b)
+        public DdReal Add(DdReal other)
         {
-            (double s, double e) = MathHelper.TwoSum(a, b);
+            var (s1, s2) = MathHelper.TwoSum(data[0], other.data[0]);
+            var (t1, t2) = MathHelper.TwoSum(data[1], other.data[1]);
+            s2 += t1;
+            (s1, s2) = MathHelper.QuickTwoSum(s1, s2);
+            s2 += t2;
+            (s1, s2) = MathHelper.QuickTwoSum(s1, s2);
+            return new DdReal(s1, s2);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public DdReal AddSloppy(DdReal other)
+        {
+            var (s, e) = MathHelper.TwoSum(data[0], other.data[0]);
+            e += data[1] + other.data[1];
+            (s, e) = MathHelper.QuickTwoSum(s, e);
             return new DdReal(s, e);
         }
 
         #endregion
-	}
+    }
 }
