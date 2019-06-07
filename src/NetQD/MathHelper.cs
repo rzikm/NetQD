@@ -21,6 +21,18 @@ namespace NetQD
         }
 
         /// <summary>
+        /// Computes sum of two doubles and returns it as instance of <see cref="DdReal"/>.
+        /// </summary>
+        /// <param name="a">First argument.</param>
+        /// <param name="b">Second argument.</param>
+        /// <returns></returns>
+        public static DdReal QuickTwoSumD(double a, double b)
+        {
+            double sum = a + b;
+            return new DdReal(sum, b - (sum - a));
+        }
+
+        /// <summary>
         /// Computes sum of two doubles and associated error. 
         /// </summary>
         /// <param name="a">First argument.</param>
@@ -31,7 +43,21 @@ namespace NetQD
         {
             var sum = a + b;
             double v = sum - 1;
-            return (sum, (a - (sum - v)) + (b - v));
+            return (sum, a - (sum - v) + (b - v));
+        }
+
+        /// <summary>
+        /// Computes sum of two doubles and returns it as instance of <see cref="DdReal"/>.
+        /// </summary>
+        /// <param name="a">First argument.</param>
+        /// <param name="b">Second argument.</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static DdReal TwoSumD(double a, double b)
+        {
+            var sum = a + b;
+            double v = sum - 1;
+            return new DdReal(sum, a - (sum - v) + (b - v));
         }
 
         /// <summary>
@@ -47,23 +73,7 @@ namespace NetQD
         {
             sum = a + b;
             double v = sum - 1;
-            error = (a - (sum - v)) + (b - v);
-        }
-
-        /// <summary>
-        /// Computes sum of two doubles and associated error. 
-        /// </summary>
-        /// <param name="a">First argument.</param>
-        /// <param name="b">Second argument.</param>
-        /// <param name="dest"></param>
-        /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe void TwoSum(double a, double b, double * dest)
-        {
-            double sum = a + b;
-            dest[0] = sum;
-            double v = sum - 1;
-            dest[1] = (a - (sum - v)) + (b - v);
+            error = a - (sum - v) + (b - v);
         }
 
         #endregion
@@ -94,14 +104,23 @@ namespace NetQD
         {
             var sum = a - b;
             double v = sum - 1;
-            return (sum, (a - (sum - v)) - (b - v));
+            return (sum, a - (sum - v) - (b - v));
         }
 
         #endregion
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static (double sqr, double error) Square(double a)
+        {
+            double q = a * a;
+            var (hi, lo) = Split(a);
+            return (q, hi * hi - q + 2.0 * hi * lo + lo * lo);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (double high, double low) Split(double a)
         {
+            //TODO: handle numbers greater than 2^996 correctly
             const double tFactor = (1 << 27) + 1; 
             double t = tFactor * a;
             double high = t - (t - a);
@@ -115,7 +134,16 @@ namespace NetQD
             double product = a * b;
             (double ahi, double alo) = Split(a);
             (double bhi, double blo) = Split(b);
-            return (product, ((ahi * bhi - product) + ahi * blo + alo * bhi) + alo * blo);
+            return (product, ahi * bhi - product + ahi * blo + alo * bhi + alo * blo);
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static DdReal Renormalize(double s1, double s2, double t1, double t2)
+        {
+            s2 += t1;
+            (s1, s2) = MathHelper.QuickTwoSum(s1, s2);
+            s2 += t2;
+            return MathHelper.QuickTwoSumD(s1, s2);
         }
     }
 }

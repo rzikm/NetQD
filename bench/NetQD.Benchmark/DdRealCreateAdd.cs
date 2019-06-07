@@ -42,6 +42,5 @@ namespace NetQD.Benchmark
             (double s, double e) = MathHelper.TwoSum(a, b);
             return new DdReal(s, e);
         }
-
     }
 }
