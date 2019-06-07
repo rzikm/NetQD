@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.Design;
 using System.Runtime.CompilerServices;
 
 namespace NetQD
@@ -33,7 +32,7 @@ namespace NetQD
             int i, j, k;
             double s, t;
             double u, v;
-            double* x = stackalloc double[4];
+            var x = stackalloc double[4];
 
             i = j = k = 0;
             if (Math.Abs(left.x0) > Math.Abs(right.x0))
@@ -44,6 +43,7 @@ namespace NetQD
             {
                 u = right[j++];
             }
+
             if (Math.Abs(left[i]) > Math.Abs(right[j]))
             {
                 v = left[i++];
@@ -94,13 +94,9 @@ namespace NetQD
             }
 
             for (k = i; k < 4; k++)
-            {
                 x[3] += left[k];
-            }
             for (k = j; k < 4; k++)
-            {
                 x[3] += right[k];
-            }
 
             return Renormalize(x[0], x[1], x[2], x[3]);
         }
@@ -112,7 +108,7 @@ namespace NetQD
 
             (s1, t0) = MathHelper.TwoSum(s1, t0);
 
-            double s2 = left.x2;
+            var s2 = left.x2;
             ThreeSum(ref s2, ref t0, ref t1);
 
             double s3;
@@ -123,10 +119,7 @@ namespace NetQD
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static QdReal operator +(in DdReal left, in QdReal right)
-        {
-            return right + left;
-        }
+        public static QdReal operator +(in DdReal left, in QdReal right) => right + left;
 
         public static QdReal operator +(in QdReal left, double right)
         {
@@ -142,28 +135,16 @@ namespace NetQD
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static QdReal operator +(double left, in QdReal right)
-        {
-            return right + left;
-        }
+        public static QdReal operator +(double left, in QdReal right) => right + left;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public QdReal Add(in QdReal other)
-        {
-            return this + other;
-        }
+        public QdReal Add(in QdReal other) => this + other;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public QdReal Add(in DdReal other)
-        {
-            return this + other;
-        }
+        public QdReal Add(in DdReal other) => this + other;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public QdReal Add(double other)
-        {
-            return this + other;
-        }
+        public QdReal Add(double other) => this + other;
 
         public QdReal AddSlopy(in QdReal other)
         {
@@ -187,13 +168,308 @@ namespace NetQD
 
         #region Subtraction
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static QdReal operator -(in QdReal value)
+            => new QdReal(-value.x0, -value.x1, -value.x2, -value.x3);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static QdReal operator -(in QdReal left, in QdReal right) => left + -right;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static QdReal operator -(in QdReal left, in DdReal right) => left + -right;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static QdReal operator -(in DdReal left, in QdReal right) => left + -right;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static QdReal operator -(in QdReal left, double right) => left + -right;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static QdReal operator -(double left, in QdReal right) => left + -right;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public QdReal Subtract(in QdReal other) => this - other;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public QdReal Subtract(in DdReal other) => this - other;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public QdReal Subtract(double other) => this - other;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public QdReal SubtractSloppy(in QdReal other) => AddSlopy(-other);
+
         #endregion
 
         #region Multiplication
 
+        public static QdReal operator *(in QdReal left, in QdReal right)
+        {
+            double p0, p1, p2, p3, p4, p5;
+            double q0, q1, q2, q3, q4, q5;
+            double p6, p7, p8, p9;
+            double q6, q7, q8, q9;
+            double r0, r1;
+            double t0, t1;
+            double s0, s1, s2;
+
+            (p0, q0) = MathHelper.TwoProd(left.x0, right.x0);
+
+            (p1, q1) = MathHelper.TwoProd(left.x0, right.x1);
+            (p2, q2) = MathHelper.TwoProd(left.x1, right.x0);
+
+            (p3, q3) = MathHelper.TwoProd(left.x0, right.x2);
+            (p4, q4) = MathHelper.TwoProd(left.x1, right.x1);
+            (p5, q5) = MathHelper.TwoProd(left.x2, right.x0);
+
+            /* Start Accumulation */
+            ThreeSum(ref p1, ref p2, ref q0);
+
+            /* Six-Three Sum  of p2, q1, q2, p3, p4, p5. */
+            ThreeSum(ref p2, ref q1, ref q2);
+            ThreeSum(ref p3, ref p4, ref p5);
+            /* compute (s0, s1, s2) = (p2, q1, q2) + (p3, p4, p5). */
+            (s0, t0) = MathHelper.TwoSum(p2, p3);
+            (s1, t1) = MathHelper.TwoSum(q1, p4);
+            s2 = q2 + p5;
+            (s1, t0) = MathHelper.TwoSum(s1, t0);
+            s2 += t0 + t1;
+
+            /* O(eps^3) order terms */
+            (p6, q6) = MathHelper.TwoProd(left.x0, right.x3);
+            (p7, q7) = MathHelper.TwoProd(left.x1, right.x2);
+            (p8, q8) = MathHelper.TwoProd(left.x2, right.x1);
+            (p9, q9) = MathHelper.TwoProd(left.x3, right.x0);
+
+            /* Nine-Two-Sum of q0, s1, q3, q4, q5, p6, p7, p8, p9. */
+            (q0, q3) = MathHelper.TwoSum(q0, q3);
+            (q4, q5) = MathHelper.TwoSum(q4, q5);
+            (p6, p7) = MathHelper.TwoSum(p6, p7);
+            (p8, p9) = MathHelper.TwoSum(p8, p9);
+            /* Compute (t0, t1) = (q0, q3) + (q4, q5). */
+            (t0, t1) = MathHelper.TwoSum(q0, q4);
+            t1 += q3 + q5;
+            /* Compute (r0, r1) = (p6, p7) + (p8, p9). */
+            (r0, r1) = MathHelper.TwoSum(p6, p8);
+            r1 += p7 + p9;
+            /* Compute (q3, q4) = (t0, t1) + (r0, r1). */
+            (q3, q4) = MathHelper.TwoSum(t0, r0);
+            q4 += t1 + r1;
+            /* Compute (t0, t1) = (q3, q4) + s1. */
+            (t0, t1) = MathHelper.TwoSum(q3, s1);
+            t1 += q4;
+
+            /* O(eps^4) terms -- Nine-One-Sum */
+            t1 += left.x1 * right.x3 +
+                left.x2 * right.x2 +
+                left.x3 * right.x1 +
+                q6 +
+                q7 +
+                q8 +
+                q9 +
+                s2;
+
+            return Renormalize(p0, p1, s0, t0, t1);
+        }
+
+        public static QdReal operator *(in QdReal left, in DdReal right)
+        {
+            double p0, p1, p2, p3, p4;
+            double q0, q1, q2, q3, q4;
+            double s0, s1, s2;
+            double t0, t1;
+
+            (p0, q0) = MathHelper.TwoProd(left.x0, right.x0);
+            (p1, q1) = MathHelper.TwoProd(left.x0, right.x1);
+            (p2, q2) = MathHelper.TwoProd(left.x1, right.x0);
+            (p3, q3) = MathHelper.TwoProd(left.x1, right.x1);
+            (p4, q4) = MathHelper.TwoProd(left.x2, right.x0);
+
+            ThreeSum(ref p1, ref p2, ref q0);
+
+            ThreeSum(ref p2, ref p3, ref p4);
+            (q1, q2) = MathHelper.TwoSum(q1, q2);
+            (s0, t0) = MathHelper.TwoSum(p2, q1);
+            (s1, t1) = MathHelper.TwoSum(p3, q2);
+            (s1, t0) = MathHelper.TwoSum(s1, t0);
+            s2 = t0 + t1 + p4;
+            p2 = s0;
+
+            p2 = left.x2 * right.x0 + left.x3 * right.x1 + q3 + q4;
+            ThreeSum2(ref p3, ref q0, ref s1);
+            p4 = q0 + s2;
+
+            return Renormalize(p0, p1, p2, p3);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static QdReal operator *(in DdReal left, in QdReal right) => right * left;
+
+        public static QdReal operator *(in QdReal left, double right)
+        {
+            double p0, p1, p2, p3;
+            double q0, q1, q2;
+            double s0, s1, s2, s3, s4;
+
+            (p0, q0) = MathHelper.TwoProd(left.x0, right);
+            (p1, q1) = MathHelper.TwoProd(left.x2, right);
+            (p2, q2) = MathHelper.TwoProd(left.x2, right);
+            p3 = left.x3 * right;
+
+            s0 = p0;
+
+            (s1, s2) = MathHelper.TwoSum(q0, p1);
+
+            ThreeSum(ref s2, ref q1, ref p2);
+            ThreeSum2(ref q1, ref q2, ref p3);
+            s3 = q1;
+            s4 = q2 + p2;
+
+            return Renormalize(s0, s1, s2, s3, s4);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static QdReal operator *(double left, in QdReal right) => right * left;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public QdReal Multiply(in QdReal other) => this * other;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public QdReal Multiply(in DdReal other) => this * other;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public QdReal Multiply(double other) => this * other;
+
+        public QdReal MultiplySloppy(in QdReal other)
+        {
+            double p0, p1, p2, p3, p4, p5;
+            double q0, q1, q2, q3, q4, q5;
+            double t0, t1;
+            double s0, s1, s2;
+
+            (p0, q0) = MathHelper.TwoProd(x0, other.x0);
+
+            (p1, q1) = MathHelper.TwoProd(x0, other.x1);
+            (p2, q2) = MathHelper.TwoProd(x1, other.x0);
+
+            (p3, q3) = MathHelper.TwoProd(x0, other.x2);
+            (p4, q4) = MathHelper.TwoProd(x1, other.x1);
+            (p5, q5) = MathHelper.TwoProd(x2, other.x0);
+
+            /* Start Accumulation */
+            ThreeSum(ref p1, ref p2, ref q0);
+
+            /* Six-Three Sum  of p2, q1, q2, p3, p4, p5. */
+            ThreeSum(ref p2, ref q1, ref q2);
+            ThreeSum(ref p3, ref p4, ref p5);
+            /* compute (s0, s1, s2) = (p2, q1, q2) + (p3, p4, p5). */
+            (s0, t0) = MathHelper.TwoSum(p2, p3);
+            (s1, t1) = MathHelper.TwoSum(q1, p4);
+            s2 = q2 + p5;
+            (s1, t0) = MathHelper.TwoSum(s1, t0);
+            s2 += t0 + t1;
+
+            /* O(eps^3) order terms */
+            s1 += x0 * other.x3 + x1 * other.x2 + x2 * other.x1 + x3 * other.x0 + q0 + q3 + q4 + q5;
+            return Renormalize(p0, p1, s0, s1, s2);
+        }
+
         #endregion
 
         #region Division
+
+        public static QdReal operator /(in QdReal left, in QdReal right)
+        {
+            double q0, q1, q2, q3;
+
+            QdReal r;
+
+            q0 = left.x0 / right.x0;
+            r = left - right * q0;
+
+            q1 = r.x0 / right.x0;
+            r -= right * q1;
+
+            q2 = r.x0 / right.x0;
+            r -= right * q2;
+
+            q3 = r.x0 / right.x0;
+
+            r -= right * q3;
+            var q4 = r.x0 / right.x0;
+
+            return Renormalize(q0, q1, q2, q3, q4);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static QdReal operator /(in QdReal left, in DdReal right) => left / (QdReal) right;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static QdReal operator /(in DdReal left, in QdReal right) => (QdReal) left / right;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static QdReal operator /(in QdReal left, double right)
+        {
+            /* Strategy:  compute approximate quotient using high order
+               doubles, and then correct it 3 times using the remainder.
+               (Analogous to long division.)                             */
+            double t0, t1;
+            double q0, q1, q2, q3;
+            QdReal r;
+
+            q0 = left.x0 / right; /* approximate quotient */
+
+            /* Compute the remainder  a - q0 * right */
+            (t0, t1) = MathHelper.TwoProd(q0, right);
+            r = left - new DdReal(t0, t1);
+
+            /* Compute the first correction */
+            q1 = r[0] / right;
+            (t0, t1) = MathHelper.TwoProd(q1, right);
+            r -= new DdReal(t0, t1);
+
+            /* Second correction to the quotient. */
+            q2 = r[0] / right;
+            (t0, t1) = MathHelper.TwoProd(q2, right);
+            r -= new QdReal(t0, t1);
+
+            /* Final correction to the quotient. */
+            q3 = r[0] / right;
+
+            return Renormalize(q0, q1, q2, q3);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static QdReal operator /(double left, in QdReal right) => (QdReal) left / right;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public QdReal Divide(in QdReal other) => this / other;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public QdReal Divide(in DdReal other) => this / other;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public QdReal Divide(double other) => this / other;
+
+        public QdReal DivideSloppy(in QdReal other)
+        {
+            double q0, q1, q2, q3;
+
+            QdReal r;
+
+            q0 = x0 / other.x0;
+            r = this - other * q0;
+
+            q1 = r[0] / other.x0;
+            r -= other * q1;
+
+            q2 = r[0] / other.x0;
+            r -= other * q2;
+
+            q3 = r[0] / other.x0;
+
+            return Renormalize(q0, q1, q2, q3);
+        }
 
         #endregion
 
@@ -526,11 +802,13 @@ namespace NetQD
             (s, b) = MathHelper.TwoSum(b, c);
             (s, a) = MathHelper.TwoSum(a, s);
 
-            za = (a != 0.0);
-            zb = (b != 0.0);
+            za = a != 0.0;
+            zb = b != 0.0;
 
             if (za & zb)
+            {
                 return s;
+            }
 
             if (!zb)
             {
@@ -565,6 +843,5 @@ namespace NetQD
                 }
             }
         }
-
     }
 }
