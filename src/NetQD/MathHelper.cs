@@ -136,14 +136,5 @@ namespace NetQD
             (double bhi, double blo) = Split(b);
             return (product, ahi * bhi - product + ahi * blo + alo * bhi + alo * blo);
         }
-        
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static DdReal Renormalize(double s1, double s2, double t1, double t2)
-        {
-            s2 += t1;
-            (s1, s2) = MathHelper.QuickTwoSum(s1, s2);
-            s2 += t2;
-            return MathHelper.QuickTwoSumD(s1, s2);
-        }
     }
 }

@@ -30,7 +30,7 @@ namespace NetQD
         {
             var (s1, s2) = MathHelper.TwoSum(left.x0, right.x0);
             var (t1, t2) = MathHelper.TwoSum(left.x1, right.x1);
-            return MathHelper.Renormalize(s1, s2, t1, t2);
+            return Renormalize(s1, s2, t1, t2);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -71,7 +71,7 @@ namespace NetQD
         {
             var (s1, s2) = MathHelper.TwoDiff(left.x0, right.x0);
             var (t1, t2) = MathHelper.TwoDiff(left.x1, right.x1);
-            return MathHelper.Renormalize(s1, s2, t1, t2);
+            return Renormalize(s1, s2, t1, t2);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -200,6 +200,40 @@ namespace NetQD
 
         #endregion
 
+        #region Other math operators
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsNaN()
+        {
+            return double.IsNaN(x0) | double.IsNaN(x1);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsInfinity()
+        {
+            return double.IsInfinity(x0);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsFinite()
+        {
+            return !(double.IsInfinity(x0) | double.IsNaN(x0));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsPositiveInfinity()
+        {
+            return double.IsPositiveInfinity(x0);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsNegativeInfinity()
+        {
+            return double.IsNegativeInfinity(x0);
+        }
+
+        #endregion
+
         #region Conversions
 
         public static implicit operator DdReal(double value) => new DdReal(value);
@@ -270,7 +304,7 @@ namespace NetQD
 
         #endregion
 
-        #region Relational Operators
+        #region Relational operators
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator ==(DdReal left, DdReal right) => left.Equals(right);
@@ -332,6 +366,15 @@ namespace NetQD
         {
             high = x0;
             low = x1;
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static DdReal Renormalize(double s1, double s2, double t1, double t2)
+        {
+            s2 += t1;
+            (s1, s2) = MathHelper.QuickTwoSum(s1, s2);
+            s2 += t2;
+            return MathHelper.QuickTwoSumD(s1, s2);
         }
     }
 }
