@@ -5,6 +5,14 @@ namespace NetQD
 {
     internal static class MathHelper
     {
+        #region Additions
+
+        /// <summary>
+        /// Computes sum of two doubles and associated error assuming that |a| >= |b|.
+        /// </summary>
+        /// <param name="a">First argument.</param>
+        /// <param name="b">Second argument.</param>
+        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (double sum, double error) QuickTwoSum(double a, double b)
         {
@@ -12,14 +20,12 @@ namespace NetQD
             return (sum, b - (sum - a));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double QuickTwoSum(double a, double b, out double error)
-        {
-            double sum = a + b;
-            error = b - (sum - a);
-            return sum;
-        }
-
+        /// <summary>
+        /// Computes sum of two doubles and associated error. 
+        /// </summary>
+        /// <param name="a">First argument.</param>
+        /// <param name="b">Second argument.</param>
+        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (double sum, double error) TwoSum(double a, double b)
         {
@@ -28,15 +34,14 @@ namespace NetQD
             return (sum, (a - (sum - v)) + (b - v));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double TwoSum(double a, double b, out double error)
-        {
-            var sum = a + b;
-            double v = sum - 1;
-            error = (a - (sum - v)) + (b - v);
-            return sum;
-        }
-
+        /// <summary>
+        /// Computes sum of two doubles and associated error. 
+        /// </summary>
+        /// <param name="a">First argument.</param>
+        /// <param name="b">Second argument.</param>
+        /// <param name="sum"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void TwoSum(double a, double b, out double sum, out double error)
         {
@@ -45,6 +50,13 @@ namespace NetQD
             error = (a - (sum - v)) + (b - v);
         }
 
+        /// <summary>
+        /// Computes sum of two doubles and associated error. 
+        /// </summary>
+        /// <param name="a">First argument.</param>
+        /// <param name="b">Second argument.</param>
+        /// <param name="dest"></param>
+        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void TwoSum(double a, double b, double * dest)
         {
@@ -53,6 +65,39 @@ namespace NetQD
             double v = sum - 1;
             dest[1] = (a - (sum - v)) + (b - v);
         }
+
+        #endregion
+
+        #region Subtractions
+
+        /// <summary>
+        /// Computes difference of two doubles and associated error assuming that |a| >= |b|.
+        /// </summary>
+        /// <param name="a">First argument.</param>
+        /// <param name="b">Second argument.</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static (double diff, double error) QuickTwoDiff(double a, double b)
+        {
+            double diff = a - b;
+            return (diff, b - (diff - a));
+        }
+
+        /// <summary>
+        /// Computes difference of two doubles and associated error. 
+        /// </summary>
+        /// <param name="a">First argument.</param>
+        /// <param name="b">Second argument.</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static (double sum, double error) TwoDiff(double a, double b)
+        {
+            var sum = a - b;
+            double v = sum - 1;
+            return (sum, (a - (sum - v)) - (b - v));
+        }
+
+        #endregion
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (double high, double low) Split(double a)

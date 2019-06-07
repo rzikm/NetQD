@@ -55,5 +55,11 @@ namespace NetQD
         }
 
         #endregion
+
+        #region Subtraction
+
+        
+
+        #endregion
     }
 }
