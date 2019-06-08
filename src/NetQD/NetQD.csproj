@@ -12,6 +12,7 @@
     <Version>1.0.1</Version>
     <Description>A .NET implementation of 128-bit and 256-bit floating point types.</Description>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

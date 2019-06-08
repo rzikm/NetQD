@@ -47,7 +47,7 @@ namespace NetQD.Benchmark
         {
             (double s1, double s2) = MathHelper.TwoSum(left.High, right.High);
             (double t1, double t2) = MathHelper.TwoSum(left.High, right.High);
-            return MathHelper.Renormalize(s1, s2, t1, t2);
+            return DdReal.Renormalize(s1, s2, t1, t2);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
