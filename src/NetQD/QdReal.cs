@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 
 namespace NetQD
@@ -7,7 +8,7 @@ namespace NetQD
     ///     Represents a floating number with quad-double precision (256-bits)
     /// </summary>
     public struct QdReal
-        : IComparable<QdReal>, IComparable, IEquatable<QdReal>, IConvertible
+        : IComparable<QdReal>, IComparable, IEquatable<QdReal>, IConvertible, IFormattable
     {
         public static QdReal Zero => new QdReal(0);
         public static QdReal One => new QdReal(1);
@@ -473,6 +474,40 @@ namespace NetQD
 
         #endregion
 
+        #region Other math operators
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsNaN()
+        {
+            return double.IsNaN(x0) | double.IsNaN(x1) | double.IsNaN(x2) | double.IsNaN(x3);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsInfinity()
+        {
+            return double.IsInfinity(x0);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsFinite()
+        {
+            return !(double.IsInfinity(x0) | double.IsNaN(x0));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsPositiveInfinity()
+        {
+            return double.IsPositiveInfinity(x0);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsNegativeInfinity()
+        {
+            return double.IsNegativeInfinity(x0);
+        }
+
+        #endregion
+
         #region Conversions
 
         public static implicit operator QdReal(DdReal value) => new QdReal(value.x0, value.x1);
@@ -540,8 +575,6 @@ namespace NetQD
         uint IConvertible.ToUInt32(IFormatProvider provider) => (uint) this;
 
         ulong IConvertible.ToUInt64(IFormatProvider provider) => (ulong) this;
-
-        public string ToString(IFormatProvider provider) => ToString();
 
         #endregion
 
@@ -621,6 +654,105 @@ namespace NetQD
                 hashCode = (hashCode * 397) ^ x3.GetHashCode();
                 return hashCode;
             }
+        }
+
+        #endregion
+
+        #region Parsing and printing
+
+        public static QdReal Parse(string s)
+        {
+            if (TryParse(s, out var value))
+            {
+                return value;
+            }
+
+            throw new FormatException();
+        }
+
+        public static bool TryParse(string s, out QdReal value)
+        {
+            // TODO: support for IFormatProvider as double.TryParse does
+
+            int p = 0;
+            int sign = 0;
+            int point = -1;
+            int nd = 0;
+            int e = 0;
+            bool done = false;
+            QdReal r = 0.0;
+            value = r;
+            int nread;
+
+            while (!done && p != s.Length)
+            {
+                char ch = s[p++];
+                if (char.IsDigit(ch))
+                {
+                    int d = ch - '0';
+                    r = r * 10 + d;
+                    nd++;
+                    continue;
+                }
+
+                switch (ch)
+                {
+                    case '.':
+                        if (point >= 0)
+                            return false;
+                        point = nd;
+                        break;
+
+                    case '-':
+                    case '+':
+                        if (sign != 0 || nd > 0)
+                            return false;
+                        sign = (ch == '-') ? -1 : 1;
+                        break;
+
+                    case 'E':
+                    case 'e':
+                        if (!int.TryParse(s.Substring(p), out nread))
+                            return false;
+                        done = true;
+                        break;
+
+                    default:
+                        return false;
+                }
+            }
+
+            if (point >= 0)
+            {
+                e -= nd - point;
+            }
+
+            if (e != 0)
+            {
+                // TODO: implement QdReal.Pow
+                r *= Math.Pow(10, e);
+            }
+
+            value = (sign == -1) ? -r : r;
+            return true;
+        }
+
+        public override string ToString() => ToString("G", CultureInfo.CurrentCulture);
+
+        public string ToString(IFormatProvider provider)
+        {
+            return ToString("G", provider);
+        }
+
+        public string ToString(string format, IFormatProvider formatProvider)
+        {
+            if (formatProvider == null)
+            {
+                formatProvider = CultureInfo.CurrentCulture;
+            }
+
+            // TODO: use all members for formatting
+            return x0.ToString(format, formatProvider);
         }
 
         #endregion

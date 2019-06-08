@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Globalization;
+using System.IO;
 using System.Runtime.CompilerServices;
 
 namespace NetQD
@@ -6,7 +8,7 @@ namespace NetQD
     /// <summary>
     ///     Represents a floating number with double-double precision (128-bits)
     /// </summary>
-    public struct DdReal : IComparable<DdReal>, IComparable, IEquatable<DdReal>, IConvertible
+    public struct DdReal : IComparable<DdReal>, IComparable, IEquatable<DdReal>, IConvertible, IFormattable
     {
         public static DdReal Zero => new DdReal(0);
         public static DdReal One => new DdReal(1);
@@ -175,7 +177,7 @@ namespace NetQD
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static DdReal operator /(double left, DdReal right) => (DdReal) left / right;
+        public static DdReal operator /(double left, DdReal right) => (DdReal)left / right;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static DdReal Divide(double a, double b)
@@ -243,64 +245,62 @@ namespace NetQD
         public static explicit operator double(DdReal value) => value.x0;
 
         public static explicit operator decimal(DdReal value)
-            => (decimal) value.x0 + (decimal) value.x1;
+            => (decimal)value.x0 + (decimal)value.x1;
 
-        public static explicit operator float(DdReal value) => (float) value.x0;
+        public static explicit operator float(DdReal value) => (float)value.x0;
 
-        public static explicit operator ulong(DdReal value) => (ulong) value.x0;
+        public static explicit operator ulong(DdReal value) => (ulong)value.x0;
 
-        public static explicit operator long(DdReal value) => (long) value.x0;
+        public static explicit operator long(DdReal value) => (long)value.x0;
 
-        public static explicit operator uint(DdReal value) => (uint) value.x0;
+        public static explicit operator uint(DdReal value) => (uint)value.x0;
 
-        public static explicit operator int(DdReal value) => (int) value.x0;
+        public static explicit operator int(DdReal value) => (int)value.x0;
 
-        public static explicit operator short(DdReal value) => (short) value.x0;
+        public static explicit operator short(DdReal value) => (short)value.x0;
 
-        public static explicit operator ushort(DdReal value) => (ushort) value.x0;
+        public static explicit operator ushort(DdReal value) => (ushort)value.x0;
 
-        public static explicit operator byte(DdReal value) => (byte) value.x0;
+        public static explicit operator byte(DdReal value) => (byte)value.x0;
 
-        public static explicit operator sbyte(DdReal value) => (sbyte) value.x0;
+        public static explicit operator sbyte(DdReal value) => (sbyte)value.x0;
 
-        public static explicit operator char(DdReal value) => (char) value.x0;
+        public static explicit operator char(DdReal value) => (char)value.x0;
 
         TypeCode IConvertible.GetTypeCode() => TypeCode.Double;
 
         bool IConvertible.ToBoolean(IFormatProvider provider)
             => throw new InvalidCastException("Cannot cast DdReal to bool");
 
-        byte IConvertible.ToByte(IFormatProvider provider) => (byte) this;
+        byte IConvertible.ToByte(IFormatProvider provider) => (byte)this;
 
-        char IConvertible.ToChar(IFormatProvider provider) => (char) this;
+        char IConvertible.ToChar(IFormatProvider provider) => (char)this;
 
         DateTime IConvertible.ToDateTime(IFormatProvider provider)
             => throw new InvalidCastException("Cannot cast DdReal to DateTime");
 
-        decimal IConvertible.ToDecimal(IFormatProvider provider) => (decimal) this;
+        decimal IConvertible.ToDecimal(IFormatProvider provider) => (decimal)this;
 
-        double IConvertible.ToDouble(IFormatProvider provider) => (double) this;
+        double IConvertible.ToDouble(IFormatProvider provider) => (double)this;
 
-        short IConvertible.ToInt16(IFormatProvider provider) => (short) this;
+        short IConvertible.ToInt16(IFormatProvider provider) => (short)this;
 
-        int IConvertible.ToInt32(IFormatProvider provider) => (int) this;
+        int IConvertible.ToInt32(IFormatProvider provider) => (int)this;
 
-        long IConvertible.ToInt64(IFormatProvider provider) => (long) this;
+        long IConvertible.ToInt64(IFormatProvider provider) => (long)this;
 
-        sbyte IConvertible.ToSByte(IFormatProvider provider) => (sbyte) this;
+        sbyte IConvertible.ToSByte(IFormatProvider provider) => (sbyte)this;
 
-        float IConvertible.ToSingle(IFormatProvider provider) => (float) this;
+        float IConvertible.ToSingle(IFormatProvider provider) => (float)this;
 
         object IConvertible.ToType(Type conversionType, IFormatProvider provider)
             => throw new NotSupportedException("Conversion to arbitrary type is not supported");
 
-        ushort IConvertible.ToUInt16(IFormatProvider provider) => (ushort) this;
+        ushort IConvertible.ToUInt16(IFormatProvider provider) => (ushort)this;
 
-        uint IConvertible.ToUInt32(IFormatProvider provider) => (uint) this;
+        uint IConvertible.ToUInt32(IFormatProvider provider) => (uint)this;
 
-        ulong IConvertible.ToUInt64(IFormatProvider provider) => (ulong) this;
-
-        public string ToString(IFormatProvider provider) => ToString();
+        ulong IConvertible.ToUInt64(IFormatProvider provider) => (ulong)this;
 
         #endregion
 
@@ -361,13 +361,110 @@ namespace NetQD
 
         #endregion
 
+        #region Parsing and printing
+
+        public static DdReal Parse(string s)
+        {
+            if (TryParse(s, out var value))
+                return value;
+
+            throw new FormatException();
+        }
+
+        public static bool TryParse(string s, out DdReal value)
+        {
+            // TODO: support for IFormatProvider as double.TryParse does
+
+            int p = 0;
+            int sign = 0;
+            int point = -1;
+            int nd = 0;
+            int e = 0;
+            bool done = false;
+            DdReal r = 0.0;
+            value = r;
+            int nread;
+
+            while (!done && p != s.Length)
+            {
+                char ch = s[p++];
+                if (char.IsDigit(ch))
+                {
+                    int d = ch - '0';
+                    r = r * 10 + d;
+                    nd++;
+                    continue;
+                }
+
+                switch (ch)
+                {
+                    case '.':
+                        if (point >= 0)
+                            return false;
+                        point = nd;
+                        break;
+
+                    case '-':
+                    case '+':
+                        if (sign != 0 || nd > 0)
+                            return false;
+                        sign = (ch == '-') ? -1 : 1;
+                        break;
+
+                    case 'E':
+                    case 'e':
+                        if (!int.TryParse(s.Substring(p), out nread))
+                            return false;
+                        done = true;
+                        break;
+
+                    default:
+                        return false;
+                }
+            }
+
+            if (point >= 0)
+            {
+                e -= nd - point;
+            }
+
+            if (e != 0)
+            {
+                // TODO: implement DdReal.Pow.
+                r *= Math.Pow(10, e);
+            }
+
+            value = (sign == -1) ? -r : r;
+            return true;
+        }
+
+        public override string ToString() => ToString("G", CultureInfo.CurrentCulture);
+
+        public string ToString(IFormatProvider provider)
+        {
+            return ToString("G", provider);
+        }
+
+        public string ToString(string format, IFormatProvider formatProvider)
+        {
+            if (formatProvider == null)
+            {
+                formatProvider = CultureInfo.CurrentCulture;
+            }
+
+            // TODO: use both x0 and x1 for formatting
+            return x0.ToString(format, formatProvider);
+        }
+
+        #endregion
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Deconstruct(out double high, out double low)
         {
             high = x0;
             low = x1;
         }
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static DdReal Renormalize(double s1, double s2, double t1, double t2)
         {
