@@ -153,7 +153,7 @@ namespace NetQD
         public static DdReal operator /(DdReal left, DdReal right)
         {
             var q1 = left.x0 / right.x0;
-            var r = left - q1 / right;
+            var r = left - q1 * right;
 
             var q2 = r.x0 / right.x0;
             r -= q2 * right;
