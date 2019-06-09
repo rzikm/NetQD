@@ -25,12 +25,6 @@ namespace NetQD.Benchmark
         } 
 
         [Benchmark]
-        public DdReal Add_ctor()
-        {
-            return Add(a, b);
-        } 
-
-        [Benchmark]
         public DdReal Add_Norm()
         {
             return Add_Norm(a, b);
@@ -41,14 +35,6 @@ namespace NetQD.Benchmark
         {
             return Add_in(a, b);
         } 
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static DdReal Add(DdReal left, DdReal right)
-        {
-            (double s1, double s2) = MathHelper.TwoSum(left.High, right.High);
-            (double t1, double t2) = MathHelper.TwoSum(left.High, right.High);
-            return DdReal.Renormalize(s1, s2, t1, t2);
-        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static DdReal Add_Norm(DdReal left, DdReal right)

@@ -510,16 +510,41 @@ namespace NetQD
 
         #region Conversions
 
+        // To QdReal
+
         public static implicit operator QdReal(DdReal value) => new QdReal(value.x0, value.x1);
+
+        // TODO: dont throw away the truncated data
+        public static explicit operator QdReal(decimal value) => new QdReal((double) value);
 
         public static implicit operator QdReal(double value) => new QdReal(value);
 
         public static implicit operator QdReal(float value) => new QdReal(value);
 
+        public static implicit operator QdReal(ulong value) => new QdReal(value);
+
+        public static implicit operator QdReal(long value) => new QdReal(value);
+
+        public static implicit operator QdReal(uint value) => new QdReal(value);
+
+        public static implicit operator QdReal(int value) => new QdReal(value);
+
+        public static implicit operator QdReal(short value) => new QdReal(value);
+
+        public static implicit operator QdReal(ushort value) => new QdReal(value);
+
+        public static implicit operator QdReal(byte value) => new QdReal(value);
+
+        public static implicit operator QdReal(sbyte value) => new QdReal(value);
+
+        public static implicit operator QdReal(char value) => new QdReal(value);
+
+        // From QdReal
+
         public static explicit operator double(QdReal value) => value.x0;
 
         public static explicit operator decimal(QdReal value)
-            => (decimal) value.x0 + (decimal) value.x1;
+            => (decimal)value.x0 + (decimal)value.x1 + (decimal)value.x2 + (decimal)value.x3;
 
         public static explicit operator float(QdReal value) => (float) value.x0;
 
@@ -568,7 +593,18 @@ namespace NetQD
         float IConvertible.ToSingle(IFormatProvider provider) => (float) this;
 
         object IConvertible.ToType(Type conversionType, IFormatProvider provider)
-            => throw new NotSupportedException("Conversion to arbitrary type is not supported");
+        {
+            if (conversionType == typeof(DdReal))
+                return (DdReal)this;
+
+            if (conversionType == typeof(object))
+                return this;
+
+            if (Type.GetTypeCode(conversionType) != TypeCode.Object)
+                return Convert.ChangeType(this, Type.GetTypeCode(conversionType), provider);
+
+            throw new InvalidCastException($"Converting type \"{typeof(DdReal)}\" to type \"{conversionType.Name}\" is not supported.");
+        }
 
         ushort IConvertible.ToUInt16(IFormatProvider provider) => (ushort) this;
 

@@ -9,7 +9,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>float double</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <Description>A .NET implementation of 128-bit and 256-bit floating point types.</Description>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <LangVersion>latest</LangVersion>

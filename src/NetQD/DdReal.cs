@@ -238,14 +238,41 @@ namespace NetQD
 
         #region Conversions
 
+        // To DdReal
+
+        public static explicit operator DdReal(QdReal value) => new DdReal(value.x0, value.x1);
+
+        // TODO: dont throw away the truncated data
+        public static explicit operator DdReal(decimal value) => new DdReal((double) value);
+
         public static implicit operator DdReal(double value) => new DdReal(value);
 
         public static implicit operator DdReal(float value) => new DdReal(value);
 
-        public static explicit operator double(DdReal value) => value.x0;
+        public static implicit operator DdReal(ulong value) => new DdReal(value);
+
+        public static implicit operator DdReal(long value) => new DdReal(value);
+
+        public static implicit operator DdReal(uint value) => new DdReal(value);
+
+        public static implicit operator DdReal(int value) => new DdReal(value);
+
+        public static implicit operator DdReal(short value) => new DdReal(value);
+
+        public static implicit operator DdReal(ushort value) => new DdReal(value);
+
+        public static implicit operator DdReal(byte value) => new DdReal(value);
+
+        public static implicit operator DdReal(sbyte value) => new DdReal(value);
+
+        public static implicit operator DdReal(char value) => new DdReal(value);
+
+        // From DdReal
 
         public static explicit operator decimal(DdReal value)
             => (decimal)value.x0 + (decimal)value.x1;
+
+        public static explicit operator double(DdReal value) => value.x0;
 
         public static explicit operator float(DdReal value) => (float)value.x0;
 
@@ -294,7 +321,18 @@ namespace NetQD
         float IConvertible.ToSingle(IFormatProvider provider) => (float)this;
 
         object IConvertible.ToType(Type conversionType, IFormatProvider provider)
-            => throw new NotSupportedException("Conversion to arbitrary type is not supported");
+        {
+            if (conversionType == typeof(QdReal))
+                return (QdReal)this;
+
+            if (conversionType == typeof(object))
+                return this;
+
+            if (Type.GetTypeCode(conversionType) != TypeCode.Object)
+                return Convert.ChangeType(this, Type.GetTypeCode(conversionType), provider);
+
+            throw new InvalidCastException($"Converting type \"{typeof(DdReal)}\" to type \"{conversionType.Name}\" is not supported.");
+        }
 
         ushort IConvertible.ToUInt16(IFormatProvider provider) => (ushort)this;
 
@@ -466,7 +504,7 @@ namespace NetQD
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static DdReal Renormalize(double s1, double s2, double t1, double t2)
+        private static DdReal Renormalize(double s1, double s2, double t1, double t2)
         {
             s2 += t1;
             (s1, s2) = MathHelper.QuickTwoSum(s1, s2);
