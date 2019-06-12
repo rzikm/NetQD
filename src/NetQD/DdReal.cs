@@ -145,6 +145,13 @@ namespace NetQD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public DdReal Multiply(DdReal other) => this * other;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public DdReal MultiplySloppy(DdReal other)
+        {
+            // no sloppy version for this one
+            return this * other;
+        }
+
         #endregion
 
         #region Division
@@ -510,6 +517,22 @@ namespace NetQD
             (s1, s2) = MathHelper.QuickTwoSum(s1, s2);
             s2 += t2;
             return MathHelper.QuickTwoSumD(s1, s2);
+        }
+        internal double this[int index]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                switch (index)
+                {
+                    case 0:
+                        return x0;
+                    case 1:
+                        return x1;
+                    default:
+                        throw new IndexOutOfRangeException();
+                }
+            }
         }
     }
 }

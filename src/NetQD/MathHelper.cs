@@ -42,8 +42,8 @@ namespace NetQD
         public static (double sum, double error) TwoSum(double a, double b)
         {
             var sum = a + b;
-            double v = sum - 1;
-            return (sum, a - (sum - v) + (b - v));
+            double bb = sum - a;
+            return (sum, a - (sum - bb) + (b - bb));
         }
 
         /// <summary>
@@ -56,8 +56,8 @@ namespace NetQD
         public static DdReal TwoSumD(double a, double b)
         {
             var sum = a + b;
-            double v = sum - 1;
-            return new DdReal(sum, a - (sum - v) + (b - v));
+            double bb = sum - a;
+            return new DdReal(sum, a - (sum - bb) + (b - bb));
         }
 
         /// <summary>
@@ -72,8 +72,8 @@ namespace NetQD
         public static void TwoSum(double a, double b, out double sum, out double error)
         {
             sum = a + b;
-            double v = sum - 1;
-            error = a - (sum - v) + (b - v);
+            double bb = sum - a;
+            error = a - (sum - bb) + (b - bb);
         }
 
         #endregion
@@ -90,7 +90,7 @@ namespace NetQD
         public static (double diff, double error) QuickTwoDiff(double a, double b)
         {
             double diff = a - b;
-            return (diff, b - (diff - a));
+            return (diff, (a - diff) - b);
         }
 
         /// <summary>
@@ -102,9 +102,9 @@ namespace NetQD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (double sum, double error) TwoDiff(double a, double b)
         {
-            var sum = a - b;
-            double v = sum - 1;
-            return (sum, a - (sum - v) - (b - v));
+            var diff = a - b;
+            double bb = diff - a;
+            return (diff, a - (diff - bb) - (b + bb));
         }
 
         #endregion
@@ -112,6 +112,7 @@ namespace NetQD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (double sqr, double error) Square(double a)
         {
+            // TODO: use FMS instructions instead of the Split solution
             double q = a * a;
             var (hi, lo) = Split(a);
             return (q, hi * hi - q + 2.0 * hi * lo + lo * lo);

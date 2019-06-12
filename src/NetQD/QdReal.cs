@@ -58,7 +58,7 @@ namespace NetQD
 
             while (k < 4)
             {
-                if (i >= 4 && j > 4)
+                if (i >= 4 && j >= 4)
                 {
                     x[k] = u;
                     if (k < 3)
@@ -139,6 +139,9 @@ namespace NetQD
         public static QdReal operator +(double left, in QdReal right) => right + left;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static QdReal Add(double left, double right) => new QdReal(left) + right;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public QdReal Add(in QdReal other) => this + other;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -147,7 +150,7 @@ namespace NetQD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public QdReal Add(double other) => this + other;
 
-        public QdReal AddSlopy(in QdReal other)
+        public QdReal AddSloppy(in QdReal other)
         {
             double s0, s1, s2, s3;
             double t0, t1, t2, t3;
@@ -189,6 +192,9 @@ namespace NetQD
         public static QdReal operator -(double left, in QdReal right) => left + -right;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static QdReal Subtract(double left, double right) => new QdReal(left) - right;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public QdReal Subtract(in QdReal other) => this - other;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -198,7 +204,7 @@ namespace NetQD
         public QdReal Subtract(double other) => this - other;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public QdReal SubtractSloppy(in QdReal other) => AddSlopy(-other);
+        public QdReal SubtractSloppy(in QdReal other) => AddSloppy(-other);
 
         #endregion
 
@@ -333,6 +339,9 @@ namespace NetQD
         public static QdReal operator *(double left, in QdReal right) => right * left;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static QdReal Multiply(double left, double right) => new QdReal(left) * right;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public QdReal Multiply(in QdReal other) => this * other;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -442,6 +451,9 @@ namespace NetQD
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static QdReal operator /(double left, in QdReal right) => (QdReal) left / right;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static QdReal Divide(double left, double right) => new QdReal(left) / right;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public QdReal Divide(in QdReal other) => this / other;
@@ -991,7 +1003,7 @@ namespace NetQD
             return 0.0;
         }
 
-        private double this[int index]
+        internal double this[int index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
