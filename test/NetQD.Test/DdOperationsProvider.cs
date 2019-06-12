@@ -36,5 +36,12 @@
         public DdReal DivideOperator(DdReal a, double b) => a / b;
         public DdReal DivideOperator(double a, DdReal b) => a / b;
         public DdReal DivideSloppy(DdReal a, DdReal b) => a.DivideSloppy(b);
+
+        public bool GreaterEqual(DdReal a, DdReal b) => a >= b;
+        public bool Greater(DdReal a, DdReal b) => a > b;
+        public bool Lesser(DdReal a, DdReal b) => a < b;
+        public bool LesserEqual(DdReal a, DdReal b) => a <= b;
+        public bool Equal(DdReal a, DdReal b) => a == b;
+        public bool NotEqual(DdReal a, DdReal b) => a != b;
     }
 }

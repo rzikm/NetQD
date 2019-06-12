@@ -38,5 +38,12 @@ namespace NetQD.Test
         public QdReal DivideOperator(QdReal a, double b) => a / b;
         public QdReal DivideOperator(double a, QdReal b) => a / b;
         public QdReal DivideSloppy(QdReal a, QdReal b) => a.DivideSloppy(b);
+
+        public bool GreaterEqual(QdReal a, QdReal b) => a >= b;
+        public bool Greater(QdReal a, QdReal b) => a > b;
+        public bool Lesser(QdReal a, QdReal b) => a < b;
+        public bool LesserEqual(QdReal a, QdReal b) => a <= b;
+        public bool Equal(QdReal a, QdReal b) => a == b;
+        public bool NotEqual(QdReal a, QdReal b) => a != b;
     }
 }

@@ -1,11 +1,13 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace NetQD.Test
 {
-    partial class GenericTests<T>
+    partial class GenericTests<T> where T : IComparable, IComparable<T>, IEquatable<T>
     {
         // internal wrapper to be used in generic tests in place of DdReal and QdReal
-        internal class Real
+        internal class Real : IComparable, IComparable<T>, IEquatable<T>
         {
             private static readonly IOperationsProvider<T> op;
             private readonly T value;
@@ -103,6 +105,24 @@ namespace NetQD.Test
             public Real Divide(Real other) => op.DivideMember(this, other);
 
             public Real DivideSloppy(Real other) => op.DivideSloppy(this, other);
+
+            public int CompareTo(object obj) => value.CompareTo(obj);
+
+            public int CompareTo(T other) => value.CompareTo(other);
+
+            public bool Equals(T other) => value.Equals(other);
+
+            public static bool operator <(Real left, Real right) => op.Lesser(left, right);
+
+            public static bool operator >(Real left, Real right) => op.Greater(left, right);
+
+            public static bool operator <=(Real left, Real right) => op.LesserEqual(left, right);
+
+            public static bool operator >=(Real left, Real right) => op.GreaterEqual(left, right);
+
+            public static bool operator ==(Real left, Real right) => op.Equal(left, right);
+
+            public static bool operator !=(Real left, Real right) => op.NotEqual(left, right);
         }
     }
 }

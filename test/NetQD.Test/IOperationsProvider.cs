@@ -37,5 +37,12 @@
         T DivideOperator(T a, double b);
         T DivideOperator(double a, T b);
         T DivideSloppy(T a, T b);
+
+        bool GreaterEqual(T a, T b);
+        bool Greater(T a, T b);
+        bool Lesser(T a, T b);
+        bool LesserEqual(T a, T b);
+        bool Equal(T a, T b);
+        bool NotEqual(T a, T b);
     }
 }
