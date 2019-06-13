@@ -60,22 +60,6 @@ namespace NetQD
             return new DdReal(sum, a - (sum - bb) + (b - bb));
         }
 
-        /// <summary>
-        /// Computes sum of two doubles and associated error. 
-        /// </summary>
-        /// <param name="a">First argument.</param>
-        /// <param name="b">Second argument.</param>
-        /// <param name="sum"></param>
-        /// <param name="error"></param>
-        /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void TwoSum(double a, double b, out double sum, out double error)
-        {
-            sum = a + b;
-            double bb = sum - a;
-            error = a - (sum - bb) + (b - bb);
-        }
-
         #endregion
 
         #region Subtractions

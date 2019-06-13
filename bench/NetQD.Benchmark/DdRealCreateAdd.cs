@@ -32,7 +32,7 @@ namespace NetQD.Benchmark
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static DdReal Add_OutToCtor(double a, double b)
         {
-            MathHelper.TwoSum(a, b, out var sum, out var error);
+            TwoSum(a, b, out var sum, out var error);
             return new DdReal(sum, error);
         }
 
@@ -41,6 +41,14 @@ namespace NetQD.Benchmark
         {
             (double s, double e) = MathHelper.TwoSum(a, b);
             return new DdReal(s, e);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void TwoSum(double a, double b, out double sum, out double error)
+        {
+            sum = a + b;
+            double bb = sum - a;
+            error = a - (sum - bb) + (b - bb);
         }
     }
 }

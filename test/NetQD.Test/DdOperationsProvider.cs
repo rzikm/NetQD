@@ -3,6 +3,9 @@
     internal class DdOperationsProvider : IOperationsProvider<DdReal>
     {
         public DdReal Create(double a) => new DdReal(a);
+        public DdReal Parse(string s) => DdReal.Parse(s);
+        public bool TryParse(string s, out DdReal v) => DdReal.TryParse(s, out v);
+
         public double Get(DdReal instance, int index) => instance[index];
 
         public DdReal Add(double a, double b) => DdReal.Add(a, b);
@@ -43,5 +46,11 @@
         public bool LesserEqual(DdReal a, DdReal b) => a <= b;
         public bool Equal(DdReal a, DdReal b) => a == b;
         public bool NotEqual(DdReal a, DdReal b) => a != b;
+
+        public bool IsNaN(DdReal a) => a.IsNaN();
+        public bool IsFinite(DdReal a) => a.IsFinite();
+        public bool IsInfinity(DdReal a) => a.IsInfinity();
+        public bool IsPositiveInfinity(DdReal a) => a.IsPositiveInfinity();
+        public bool IsNegativeInfinity(DdReal a) => a.IsNegativeInfinity();
     }
 }

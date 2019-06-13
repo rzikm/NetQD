@@ -3,6 +3,8 @@
     internal interface IOperationsProvider<T>
     {
         T Create(double a);
+        T Parse(string s);
+        bool TryParse(string s, out T v);
 
         double Get(T instance, int index);
 
@@ -44,5 +46,11 @@
         bool LesserEqual(T a, T b);
         bool Equal(T a, T b);
         bool NotEqual(T a, T b);
+
+        bool IsNaN(T a);
+        bool IsFinite(T a);
+        bool IsInfinity(T a);
+        bool IsPositiveInfinity(T a);
+        bool IsNegativeInfinity(T a);
     }
 }

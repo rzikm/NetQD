@@ -160,6 +160,11 @@ namespace NetQD
         public static DdReal operator /(DdReal left, DdReal right)
         {
             var q1 = left.x0 / right.x0;
+            if (double.IsInfinity(q1))
+            {
+                return new DdReal(q1);
+            }
+
             var r = left - q1 * right;
 
             var q2 = r.x0 / right.x0;
@@ -174,6 +179,10 @@ namespace NetQD
         {
             var a = left.x0;
             var q1 = a / right;
+            if (double.IsInfinity(q1))
+            {
+                return new DdReal(q1);
+            }
 
             var (p1, p2) = MathHelper.TwoProd(q1, right);
             var (s, e) = MathHelper.TwoDiff(a, p1);
@@ -190,6 +199,10 @@ namespace NetQD
         public static DdReal Divide(double a, double b)
         {
             var q1 = a / b;
+            if (double.IsInfinity(q1))
+            {
+                return new DdReal(q1);
+            }
 
             var (p1, p2) = MathHelper.TwoProd(q1, b);
             var (s, e) = MathHelper.TwoDiff(a, p1);
@@ -428,7 +441,6 @@ namespace NetQD
             bool done = false;
             DdReal r = 0.0;
             value = r;
-            int nread;
 
             while (!done && p != s.Length)
             {
@@ -458,7 +470,7 @@ namespace NetQD
 
                     case 'E':
                     case 'e':
-                        if (!int.TryParse(s.Substring(p), out nread))
+                        if (!int.TryParse(s.Substring(p), out e))
                             return false;
                         done = true;
                         break;
@@ -480,7 +492,7 @@ namespace NetQD
             }
 
             value = (sign == -1) ? -r : r;
-            return true;
+            return p > 0;
         }
 
         public override string ToString() => ToString("G", CultureInfo.CurrentCulture);

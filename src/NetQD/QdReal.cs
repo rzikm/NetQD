@@ -730,7 +730,6 @@ namespace NetQD
             bool done = false;
             QdReal r = 0.0;
             value = r;
-            int nread;
 
             while (!done && p != s.Length)
             {
@@ -760,7 +759,7 @@ namespace NetQD
 
                     case 'E':
                     case 'e':
-                        if (!int.TryParse(s.Substring(p), out nread))
+                        if (!int.TryParse(s.Substring(p), out e))
                             return false;
                         done = true;
                         break;
@@ -782,7 +781,7 @@ namespace NetQD
             }
 
             value = (sign == -1) ? -r : r;
-            return true;
+            return p > 0;
         }
 
         public override string ToString() => ToString("G", CultureInfo.CurrentCulture);

@@ -5,6 +5,9 @@ namespace NetQD.Test
     internal class QdOperationsProvider : IOperationsProvider<QdReal>
     {
         public QdReal Create(double a) => new QdReal(a);
+        public QdReal Parse(string s) => QdReal.Parse(s);
+        public bool TryParse(string s, out QdReal v) => QdReal.TryParse(s, out v);
+
         public double Get(QdReal instance, int index) => instance[index];
 
         public QdReal Add(double a, double b) => QdReal.Add(a, b);
@@ -45,5 +48,11 @@ namespace NetQD.Test
         public bool LesserEqual(QdReal a, QdReal b) => a <= b;
         public bool Equal(QdReal a, QdReal b) => a == b;
         public bool NotEqual(QdReal a, QdReal b) => a != b;
+
+        public bool IsNaN(QdReal a) => a.IsNaN();
+        public bool IsFinite(QdReal a) => a.IsFinite();
+        public bool IsInfinity(QdReal a) => a.IsInfinity();
+        public bool IsPositiveInfinity(QdReal a) => a.IsPositiveInfinity();
+        public bool IsNegativeInfinity(QdReal a) => a.IsNegativeInfinity();
     }
 }
