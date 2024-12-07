@@ -119,7 +119,7 @@ namespace NetQD
         {
             var (p1, p2) = MathHelper.TwoProd(left.x0, right.x0);
             return MathHelper.QuickTwoSumD(p1,
-                p2 + left.x1 * right.x0 + left.x1 * right.x0);
+                p2 + left.x0 * right.x1 + left.x1 * right.x0);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
