@@ -319,7 +319,7 @@ namespace NetQD
             double s0, s1, s2, s3, s4;
 
             (p0, q0) = MathHelper.TwoProd(left.x0, right);
-            (p1, q1) = MathHelper.TwoProd(left.x2, right);
+            (p1, q1) = MathHelper.TwoProd(left.x1, right);
             (p2, q2) = MathHelper.TwoProd(left.x2, right);
             p3 = left.x3 * right;
 
